@@ -12,14 +12,8 @@ const R = COLORS.red;
 const PL = COLORS.primaryLight;
 
 export default function CollectionHistory({ customer, history, setScreen, onHistoryUpdate }) {
-  if (!customer) return null;
 
-  const h    = [...(history[customer.id] || [])].reverse();
-  const paid = h.filter((r) => r.status === "Paid").length;
-  const miss = h.filter((r) => r.status === "Missed").length;
-  const rem  = Math.max(0, customer.duration - h.length);
-
-  // ── Edit state ──
+    // ── Edit state ──
   const [editingId, setEditingId]     = useState(null);
   const [editAmount, setEditAmount]   = useState("");
   const [editEmis,   setEditEmis]     = useState(1);
@@ -27,6 +21,15 @@ export default function CollectionHistory({ customer, history, setScreen, onHist
   const [editNotes,  setEditNotes]    = useState("");
   const [editStatus, setEditStatus]   = useState("Paid");
   const [saving,     setSaving]       = useState(false);
+  
+  if (!customer) return null;
+
+  const h    = [...(history[customer.id] || [])].reverse();
+  const paid = h.filter((r) => r.status === "Paid").length;
+  const miss = h.filter((r) => r.status === "Missed").length;
+  const rem  = Math.max(0, customer.duration - h.length);
+
+
 
   // ── Open edit ──
   function openEdit(r) {

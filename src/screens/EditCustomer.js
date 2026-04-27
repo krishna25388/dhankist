@@ -10,9 +10,8 @@ const P  = COLORS.primary;
 const PL = COLORS.primaryLight;
 
 export default function EditCustomer({ customer, setScreen, onUpdate }) {
-  if (!customer) return null;
-
-  const [form, setForm] = useState({
+    
+    const [form, setForm] = useState({
     name:       customer.name,
     phone:      customer.phone       || "",
     loanAmount: String(customer.loanAmount),
@@ -20,10 +19,11 @@ export default function EditCustomer({ customer, setScreen, onUpdate }) {
     duration:   String(customer.duration),
     startDate:  customer.startDate,
     status:     customer.status,
-  });
+});
 
-  const [errors,  setErrors]  = useState({});
-  const [saving,  setSaving]  = useState(false);
+const [errors,  setErrors]  = useState({});
+const [saving,  setSaving]  = useState(false);
+if (!customer) return null;
 
   const set = (key, val) => {
     setForm((f) => ({ ...f, [key]: val }));
