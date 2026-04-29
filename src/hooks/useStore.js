@@ -10,13 +10,13 @@ import {
   updateCustomerStatus,
 } from "../utils/api";
 
-export default function useStore() {
+export default function useStore(token) {
   const [customers, setCustomers] = useState([]);
   const [history,   setHistory]   = useState({});
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
 
-  useEffect(() => { loadCustomers(); }, []);
+
 
   const loadCustomers = useCallback(async () => {
     try {
@@ -38,6 +38,7 @@ export default function useStore() {
     }
   }, []);
 
+    useEffect(() => { loadCustomers(); }, []);
   const loadAllCollections = async (customerList) => {
     try {
       const historyMap = {};

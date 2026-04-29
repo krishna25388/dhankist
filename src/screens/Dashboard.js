@@ -1,5 +1,6 @@
 // ─── Dashboard Screen ─────────────────────────────────────────────────────────
-import { PieChart, Pie, Cell }  from "recharts";
+
+import { PieChart, Pie, Cell } from "recharts";
 import Card                     from "../components/Card";
 import Avatar                   from "../components/Avatar";
 import Badge                    from "../components/Badge";
