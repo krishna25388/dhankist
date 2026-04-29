@@ -16,7 +16,17 @@ export default function useStore(token) {
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
 
-
+// ── Only load data when token is available ──
+useEffect(() => {
+  if (token) {
+    loadCustomers();
+  } else {
+    // No token — reset state
+    setCustomers([]);
+    setHistory({});
+    setLoading(false);
+  }
+}, [token]); // ← depends on token
 
   const loadCustomers = useCallback(async () => {
     try {
@@ -38,7 +48,7 @@ export default function useStore(token) {
     }
   }, []);
 
-    useEffect(() => { loadCustomers(); }, []);
+
   const loadAllCollections = async (customerList) => {
     try {
       const historyMap = {};

@@ -108,7 +108,6 @@
 //     method: "DELETE",
 //   });
 // }
-
 // ─── DhanKist API Calls ───────────────────────────────────────────────────────
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
@@ -135,10 +134,9 @@ async function request(endpoint, options = {}) {
 
     // ── Token expired — force logout ──
     if (res.status === 401) {
-      localStorage.removeItem("dhankist_token");
-      localStorage.removeItem("dhankist_user");
-      window.location.reload();
-      return;
+       localStorage.removeItem("dhankist_token");
+       localStorage.removeItem("dhankist_user");
+       return null;
     }
 
     if (!data.success) throw new Error(data.error || "Something went wrong");
