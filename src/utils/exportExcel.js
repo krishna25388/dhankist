@@ -1,7 +1,7 @@
 // ─── DhanKist Excel Export ────────────────────────────────────────────────────
 import * as XLSX      from "xlsx";
 import { saveAs }     from "file-saver";
-import { fmt, totalAmount, dailyEMI, dueDate, customerStats, fmtDate } from "./helpers";
+import { fmt, totalAmount, periodEMI, dueDate, customerStats, fmtDate } from "./helpers";
 
 export function exportCustomerExcel(customer, history) {
   const wb   = XLSX.utils.book_new();
@@ -23,7 +23,7 @@ export function exportCustomerExcel(customer, history) {
     ["Loan Amount",    customer.loanAmount],
     ["Interest (%)",   customer.interest + "%"],
     ["Total Amount",   totalAmount(customer)],
-    ["Daily EMI",      dailyEMI(customer)],
+    ["Daily EMI",      periodEMI(customer)],
     ["Duration",       customer.duration + " Days"],
     ["Start Date",     customer.startDate],
     ["Due Date",       dueDate(customer)],

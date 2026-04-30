@@ -80,6 +80,7 @@ export default function App() {
     addCollection,
     updateHistoryRecord,
     updateCustomerRecord,
+     deleteCustomer,
     refresh,
   } = useStore(token);
 
@@ -164,7 +165,7 @@ export default function App() {
       {screen === "dashboard"         && <Dashboard         {...shared} />}
       {screen === "customers"         && <Customers         {...shared} />}
       {screen === "addCustomer"       && <AddCustomer        setScreen={setScreen} onAdd={addCustomer} />}
-      {screen === "customerDetail"    && <CustomerDetail     customer={selected} history={history} setScreen={setScreen} />}
+      {screen === "customerDetail"    && <CustomerDetail     customer={selected} history={history} setScreen={setScreen} onDelete={deleteCustomer} />}
       {screen === "addCollection"     && <AddCollection      customer={selected} setScreen={setScreen} onAdd={addCollection} />}
       {screen === "collectionHistory" && <CollectionHistory  customer={selected} history={history} setScreen={setScreen} onHistoryUpdate={updateHistoryRecord} />}
       {screen === "editCustomer"      && <EditCustomer       customer={selected} setScreen={setScreen} onUpdate={updateCustomerRecord} />}

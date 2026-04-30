@@ -5,7 +5,7 @@ import Card                     from "../components/Card";
 import Avatar                   from "../components/Avatar";
 import Badge                    from "../components/Badge";
 import { COLORS }               from "../utils/theme";
-import { fmt, fullDateLabel, customerStats, dailyEMI } from "../utils/helpers";
+import { fmt, fullDateLabel, customerStats, periodEMI } from "../utils/helpers";
 
 
 const P = COLORS.primary;
@@ -31,7 +31,7 @@ export default function Dashboard({ customers, history, setScreen, setSelected }
 
   const pendingTodayAmt = customers.reduce((s, c) => {
     const r = (history[c.id] || []).find((r) => r.date === today);
-    return s + (!r || r.status === "Missed" ? dailyEMI(c) : 0);
+    return s + (!r || r.status === "Missed" ? periodEMI(c) : 0);
   }, 0);
 
   const profitToday = Math.round(collectedToday * 20 / 120);

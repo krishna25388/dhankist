@@ -4,7 +4,7 @@ import Card          from "../components/Card";
 import Avatar        from "../components/Avatar";
 import Badge         from "../components/Badge";
 import { COLORS }    from "../utils/theme";
-import { fmt, fmtDate, dailyEMI } from "../utils/helpers";
+import { fmt, fmtDate, periodEMI } from "../utils/helpers";
 
 const P = COLORS.primary;
 
@@ -93,7 +93,7 @@ export default function Collections({ customers, history, setScreen, setSelected
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{c.name}</div>
               <div style={{ fontSize: 12, color: "#AAA", marginTop: 2 }}>
-                Daily EMI: {fmt(dailyEMI(c))}
+                Daily EMI: {fmt(periodEMI(c))}
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
