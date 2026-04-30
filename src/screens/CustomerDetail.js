@@ -24,10 +24,10 @@ const O = COLORS.orange;
 const R = COLORS.red;
 
 export default function CustomerDetail({ customer, history, setScreen, onDelete }) {
-  if (!customer) return null;
-
+  
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting,          setDeleting]          = useState(false);
+  if (!customer) return null;
 
   const st  = customerStats(customer, history);
   const pct = Math.min(100, Math.round((st.paidDays / customer.duration) * 100));
