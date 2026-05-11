@@ -126,28 +126,70 @@ export const calcReducingBalance = (customer, amountPaid) => {
 };
 
 // ─── Customer Stats ───────────────────────────────────────────────────────────
+// export const customerStats = (c, history) => {
+//   const cid = c._id || c.id;
+//   const h   = history[cid] || [];
+
+//   const totalReceived  = h.reduce((s, r) => s + (r.amount       || 0), 0);
+//   const totalInterest  = h.reduce((s, r) => s + (r.interestPaid || 0), 0);
+//   const totalPrincipal = h.reduce((s, r) => s + (r.principalPaid|| 0), 0);
+//   const paidDays       = h.reduce((s, r) => s + (r.emis         || 0), 0);
+
+//   // Remaining principal from customer record (most accurate)
+//   const remainingPrincipal = c.remainingPrincipal ?? c.loanAmount;
+
+//   // Profit = total interest collected
+//   const profit = c.paymentType === "reducing_balance" || c.paymentType === "interest_only"
+//     ? totalInterest
+//     : Math.max(0, Math.round(totalReceived - (c.loanAmount * paidDays / c.duration)));
+
+//   const pending = Math.max(0,
+//     c.paymentType === "reducing_balance" || c.paymentType === "interest_only"
+//       ? remainingPrincipal
+//       : totalAmount(c) - totalReceived
+//   );
+
+//   return {
+//     totalReceived,
+//     totalInterest,
+//     totalPrincipal,
+//     paidDays,
+//     pending,
+//     profit,
+//     remainingPrincipal,
+//   };
+// };
+
 export const customerStats = (c, history) => {
   const cid = c._id || c.id;
   const h   = history[cid] || [];
 
-  const totalReceived  = h.reduce((s, r) => s + (r.amount       || 0), 0);
-  const totalInterest  = h.reduce((s, r) => s + (r.interestPaid || 0), 0);
-  const totalPrincipal = h.reduce((s, r) => s + (r.principalPaid|| 0), 0);
-  const paidDays       = h.reduce((s, r) => s + (r.emis         || 0), 0);
+  const totalReceived  = h.reduce((s, r) => s + (r.amount        || 0), 0);
+  const totalInterest  = h.reduce((s, r) => s + (r.interestPaid  || 0), 0);
+  const totalPrincipal = h.reduce((s, r) => s + (r.principalPaid || 0), 0);
+  const paidDays       = h.reduce((s, r) => s + (r.emis          || 0), 0);
 
-  // Remaining principal from customer record (most accurate)
+  // ── Remaining principal from DB (most accurate) ──
   const remainingPrincipal = c.remainingPrincipal ?? c.loanAmount;
 
-  // Profit = total interest collected
-  const profit = c.paymentType === "reducing_balance" || c.paymentType === "interest_only"
-    ? totalInterest
-    : Math.max(0, Math.round(totalReceived - (c.loanAmount * paidDays / c.duration)));
+  // ── Total amount customer owes including interest ──
+  const fullTotal = c.paymentType === "fixed_emi"
+    ? Math.round(c.loanAmount * (1 + c.interest / 100))
+    : c.loanAmount;
 
-  const pending = Math.max(0,
-    c.paymentType === "reducing_balance" || c.paymentType === "interest_only"
-      ? remainingPrincipal
-      : totalAmount(c) - totalReceived
-  );
+  // ── Profit calculation ──
+  let profit = 0;
+  if (c.paymentType === "reducing_balance" || c.paymentType === "interest_only") {
+    profit = totalInterest;
+  } else {
+    // Fixed EMI — profit is interest portion of received
+    const totalInterestAmt = fullTotal - c.loanAmount;
+    const interestPerEmi   = c.duration > 0 ? totalInterestAmt / c.duration : 0;
+    profit = Math.round(interestPerEmi * paidDays);
+  }
+
+  // ── Pending = what is still owed ──
+  const pending = Math.max(0, fullTotal - totalReceived);
 
   return {
     totalReceived,
@@ -156,6 +198,9 @@ export const customerStats = (c, history) => {
     paidDays,
     pending,
     profit,
-    remainingPrincipal,
+    remainingPrincipal: c.paymentType === "fixed_emi"
+      ? pending  // For fixed EMI remaining = pending amount
+      : remainingPrincipal,
+    fullTotal,
   };
 };

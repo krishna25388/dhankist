@@ -96,29 +96,39 @@ export default function CustomerDetail({ customer, history, setScreen, onDelete 
       </div>
 
       {/* ── Loan Info Grid ── */}
-      <Card>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-          {[
-            ["Loan Amount",   fmt(customer.loanAmount)],
-            ["Interest",      customer.interest + "%"],
-            ["Remaining",     fmt(st.remainingPrincipal)],
-            ["Start Date",    fmtDate(customer.startDate)],
-            ["Duration",      `${customer.duration} ${frequencyLabel(customer.frequency || "daily")}s`],
-            ["Per Period",    fmt(periodEMI(customer))],
-          ].map(([l, v]) => (
-            <div key={l}>
-              <div style={{ fontSize: 10, color: "#AAA", marginBottom: 3 }}>{l}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{v}</div>
-            </div>
-          ))}
-        </div>
+      
+{/* ── Loan Info Grid ── */}
+<Card>
+  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+    {[
+      ["Loan Amount",  fmt(customer.loanAmount)],
+      ["Interest",     customer.interest + "%"],
+      ["Total Amount", fmt(Math.round(customer.loanAmount * (1 + customer.interest / 100)))],
+      ["Start Date",   fmtDate(customer.startDate)],
+      ["Duration",     `${customer.duration} ${frequencyLabel(customer.frequency || "daily")}s`],
+      ["Per Period",   fmt(periodEMI(customer))],
+    ].map(([l, v]) => (
+      <div key={l}>
+        <div style={{ fontSize: 10, color: "#AAA", marginBottom: 3 }}>{l}</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>{v}</div>
+      </div>
+    ))}
+  </div>
 
-        {/* Due date */}
-        <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #F5F5F5", display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 12, color: "#AAA" }}>Due Date</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#111" }}>{dueDate(customer)}</span>
-        </div>
-      </Card>
+  {/* ── Remaining shown separately highlighted ── */}
+  <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #F5F5F5" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <span style={{ fontSize: 13, color: "#888" }}>Remaining Amount</span>
+      <span style={{ fontSize: 16, fontWeight: 800, color: COLORS.orange }}>
+        {fmt(st.remainingPrincipal)}
+      </span>
+    </div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+      <span style={{ fontSize: 12, color: "#AAA" }}>Due Date</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "#111" }}>{dueDate(customer)}</span>
+    </div>
+  </div>
+</Card>
 
       {/* ── Reducing Balance Info ── */}
       {customer.paymentType === "reducing_balance" && (
