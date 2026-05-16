@@ -235,38 +235,49 @@ export default function AddCustomer({ setScreen, onAdd }) {
         </div>
 
         {/* ── Calculation Preview ── */}
-        {previewCustomer && (
-          <div style={{ background: PL, borderRadius: 12, padding: 14, marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: P, fontWeight: 700, marginBottom: 10 }}>
-              Calculation Preview
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {[
-                ["Loan Amount",    fmt(previewCustomer.loanAmount)],
-                ["Interest/Period",fmt(periodInterest(previewCustomer))],
-                ["Min. Due/Period",fmt(periodEMI(previewCustomer))],
-                ["Frequency",      form.frequency.charAt(0).toUpperCase() + form.frequency.slice(1)],
-                ["Duration",       `${form.duration} ${frequencyLabel(form.frequency)}s`],
-                ["Due Date",       dueDate(previewCustomer)],
-              ].map(([l, v]) => (
-                <div key={l}>
-                  <div style={{ fontSize: 10, color: "#888" }}>{l}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: P, marginTop: 2 }}>{v}</div>
-                </div>
-              ))}
-            </div>
+     {/* ── Calculation Preview ── */}
+{previewCustomer && (
+  <div style={{ background: PL, borderRadius: 12, padding: 14, marginBottom: 16 }}>
+    <div style={{ fontSize: 11, color: P, fontWeight: 700, marginBottom: 10 }}>
+      Calculation Preview
+    </div>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      {[
+        ["Loan Amount",     fmt(previewCustomer.loanAmount)],
+        ["Total Interest",  fmt(Math.round(previewCustomer.loanAmount * previewCustomer.interest / 100))],
+        ["Total Amount",    fmt(Math.round(previewCustomer.loanAmount * (1 + previewCustomer.interest / 100)))],
+        ["Per Period EMI",  fmt(periodEMI(previewCustomer))],
+        ["Duration",        `${form.duration} ${frequencyLabel(form.frequency)}s`],
+        ["Due Date",        dueDate(previewCustomer)],
+      ].map(([l, v]) => (
+        <div key={l}>
+          <div style={{ fontSize: 10, color: "#888" }}>{l}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: P, marginTop: 2 }}>{v}</div>
+        </div>
+      ))}
+    </div>
 
-            {/* Reducing balance example */}
-            {form.paymentType === "reducing_balance" && (
-              <div style={{ marginTop: 12, padding: 10, background: "#fff", borderRadius: 10, fontSize: 11, color: "#666", lineHeight: 1.6 }}>
-                💡 <strong>Example:</strong> If customer pays {fmt(periodInterest(previewCustomer) + 25000)} →
-                Interest: {fmt(periodInterest(previewCustomer))} +
-                Principal: {fmt(25000)} →
-                New loan: {fmt(Math.max(0, previewCustomer.loanAmount - 25000))}
-              </div>
-            )}
-          </div>
-        )}
+    {/* ── Total Amount highlighted ── */}
+    <div style={{ marginTop: 12, padding: "10px 14px", background: "#fff", borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center", border: `1.5px solid ${P}33` }}>
+      <div>
+        <div style={{ fontSize: 10, color: "#888" }}>Customer will pay total</div>
+        <div style={{ fontSize: 11, color: "#AAA", marginTop: 2 }}>
+          ₹{previewCustomer.loanAmount.toLocaleString("en-IN")} + {previewCustomer.interest}% interest
+        </div>
+      </div>
+      <div style={{ fontSize: 20, fontWeight: 900, color: P }}>
+        {fmt(Math.round(previewCustomer.loanAmount * (1 + previewCustomer.interest / 100)))}
+      </div>
+    </div>
+
+    {/* Reducing balance example */}
+    {form.paymentType === "reducing_balance" && (
+      <div style={{ marginTop: 10, padding: 10, background: "#fff", borderRadius: 10, fontSize: 11, color: "#666", lineHeight: 1.6 }}>
+        💡 <strong>Note:</strong> For Reducing Balance, interest reduces as principal is paid. Total interest will be less than {fmt(Math.round(previewCustomer.loanAmount * previewCustomer.interest / 100))}.
+      </div>
+    )}
+  </div>
+)}
 
         {/* ── Save Button ── */}
         <button onClick={handleSave} disabled={saving}

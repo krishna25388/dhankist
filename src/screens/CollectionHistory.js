@@ -1,8 +1,8 @@
 // ─── Collection History Screen ────────────────────────────────────────────────
-import { useState }  from "react";
-import Card          from "../components/Card";
-import Badge         from "../components/Badge";
-import { COLORS }    from "../utils/theme";
+import { useState } from "react";
+import Card from "../components/Card";
+import Badge from "../components/Badge";
+import { COLORS } from "../utils/theme";
 import { fmt, fmtDate } from "../utils/helpers";
 import { updateCollection } from "../utils/api";
 
@@ -13,27 +13,29 @@ const PL = COLORS.primaryLight;
 
 export default function CollectionHistory({ customer, history, setScreen, onHistoryUpdate }) {
 
-    // ── Edit state ──
-  const [editingId, setEditingId]     = useState(null);
-  const [editAmount, setEditAmount]   = useState("");
-  const [editEmis,   setEditEmis]     = useState(1);
-  const [editMode,   setEditMode]     = useState("Cash");
-  const [editNotes,  setEditNotes]    = useState("");
-  const [editStatus, setEditStatus]   = useState("Paid");
-  const [saving,     setSaving]       = useState(false);
-  
+  // ── Edit state ──
+  const [editingId, setEditingId] = useState(null);
+  const [editAmount, setEditAmount] = useState("");
+  const [editEmis, setEditEmis] = useState(1);
+  const [editMode, setEditMode] = useState("Cash");
+  const [editNotes, setEditNotes] = useState("");
+  const [editStatus, setEditStatus] = useState("Paid");
+  const [editDate,   setEditDate]   = useState("");
+  const [saving, setSaving] = useState(false);
+
   if (!customer) return null;
 
-  const h    = [...(history[customer.id] || [])].reverse();
+  const h = [...(history[customer.id] || [])].reverse();
   const paid = h.filter((r) => r.status === "Paid").length;
   const miss = h.filter((r) => r.status === "Missed").length;
-  const rem  = Math.max(0, customer.duration - h.length);
+  const rem = Math.max(0, customer.duration - h.length);
 
 
 
   // ── Open edit ──
   function openEdit(r) {
     setEditingId(r._id || r.id);
+    setEditDate(r.date);
     setEditAmount(String(r.amount));
     setEditEmis(r.emis);
     setEditMode(r.paymentMode || "Cash");
@@ -46,11 +48,12 @@ export default function CollectionHistory({ customer, history, setScreen, onHist
     try {
       setSaving(true);
       const updated = {
-        amount:      Number(editAmount),
-        emis:        editEmis,
+        date:        editDate,
+        amount: Number(editAmount),
+        emis: editEmis,
         paymentMode: editMode,
-        notes:       editNotes,
-        status:      editStatus,
+        notes: editNotes,
+        status: editStatus,
       };
       await updateCollection(r._id || r.id, updated);
 
@@ -76,7 +79,7 @@ export default function CollectionHistory({ customer, history, setScreen, onHist
             style={{ width: 36, height: 36, borderRadius: 10, background: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 4px #0000000d", cursor: "pointer" }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2.2">
-              <polyline points="15 18 9 12 15 6"/>
+              <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
           <h1 style={{ fontSize: 20, fontWeight: 800, color: "#111", margin: 0 }}>
@@ -90,9 +93,9 @@ export default function CollectionHistory({ customer, history, setScreen, onHist
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", textAlign: "center" }}>
           {[
             ["Total EMI", customer.duration, "#111"],
-            ["Paid",      paid,              G    ],
-            ["Missed",    miss,              R    ],
-            ["Remaining", rem,               P    ],
+            ["Paid", paid, G],
+            ["Missed", miss, R],
+            ["Remaining", rem, P],
           ].map(([l, v, col], i) => (
             <div key={l} style={{ borderLeft: i > 0 ? "1px solid #F3F3F3" : "none" }}>
               <div style={{ fontSize: 20, fontWeight: 800, color: col }}>{v}</div>
@@ -134,8 +137,8 @@ export default function CollectionHistory({ customer, history, setScreen, onHist
                   style={{ background: PL, border: "none", borderRadius: 8, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
                 >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={P} strokeWidth="2.2">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round"/>
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round" />
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" />
                   </svg>
                 </button>
               </div>
@@ -146,8 +149,24 @@ export default function CollectionHistory({ customer, history, setScreen, onHist
                   ✏️ Editing — {fmtDate(r.date)}
                 </div>
 
+
                 {/* Amount */}
                 <div style={{ marginBottom: 10 }}>
+                  <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>
+                    Date
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", padding: "10px 12px", border: `1.5px solid ${P}`, borderRadius: 10, background: "#fff", gap: 8 }}>
+                    <input
+                      type="date"
+                      value={editDate}
+                      onChange={(e) => setEditDate(e.target.value)}
+                      style={{ border: "none", background: "none", fontSize: 14, outline: "none", flex: 1, color: "#111", fontFamily: "inherit" }}
+                    />
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#BBB" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" />
+                      <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
+                    </svg>
+                  </div>
                   <label style={{ fontSize: 11, color: "#888", fontWeight: 600, display: "block", marginBottom: 4 }}>Amount (₹)</label>
                   <input
                     type="number"

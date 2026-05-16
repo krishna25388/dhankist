@@ -17,6 +17,10 @@ export default function Dashboard({ customers, history, setScreen, setSelected }
   // ── Totals ──
   const allStats    = customers.map((c) => customerStats(c, history));
   const totalGiven  = customers.reduce((s, c) => s + c.loanAmount, 0);
+  const totalWithInterest = customers.reduce((s, c) => {
+  // Total amount customer owes including interest
+  return s + Math.round(c.loanAmount * (1 + c.interest / 100));
+}, 0);
   const totalRcv    = allStats.reduce((s, x) => s + x.totalReceived, 0);
   const totalPend   = allStats.reduce((s, x) => s + x.pending, 0);
   const totalProfit = allStats.reduce((s, x) => s + x.profit, 0);
@@ -74,33 +78,66 @@ export default function Dashboard({ customers, history, setScreen, setSelected }
         </div>
       </div>
 
-      {/* ── 4 Stat Cards ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
-        {[
-          { label: "Total Given",    value: fmt(totalGiven),   color: "#111", bg: "#F0EEFF", ic: P,
-            path: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" strokeLinecap="round"/></> },
-          { label: "Total Received", value: fmt(totalRcv),     color: G,      bg: "#E8F5E9", ic: G,
-            path: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" strokeLinecap="round" strokeLinejoin="round"/></> },
-          { label: "Total Pending",  value: fmt(totalPend),    color: O,      bg: "#FFF4EC", ic: O,
-            path: <><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3" strokeLinecap="round" strokeLinejoin="round"/></> },
-          { label: "Total Profit",   value: fmt(totalProfit),  color: P,      bg: "#EEF0FF", ic: P,
-            path: <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></> },
-        ].map((s) => (
-          <div key={s.label} style={{ background: "#fff", borderRadius: 14, padding: "14px 14px 12px", boxShadow: "0 1px 6px #0000000d" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 11, color: "#999", fontWeight: 500 }}>{s.label}</span>
-              <div style={{ width: 30, height: 30, borderRadius: 8, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={s.ic} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {s.path}
-                </svg>
-              </div>
-            </div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: s.color, letterSpacing: -0.3 }}>
-              {s.value}
-            </div>
-          </div>
-        ))}
+    
+    {/* ── 5 Stat Cards ── */}
+<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+  {[
+    {
+      label: "Total Given",
+      value: fmt(totalGiven),
+      color: "#111",
+      bg:    "#F0EEFF",
+      ic:    P,
+      path:  <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" strokeLinecap="round"/></>
+    },
+    {
+      label: "Total + Interest",
+      value: fmt(totalWithInterest),
+      color: "#4F7CE0",
+      bg:    "#EEF4FF",
+      ic:    "#4F7CE0",
+      path:  <><path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" strokeLinecap="round" strokeLinejoin="round"/></>
+    },
+    {
+      label: "Total Received",
+      value: fmt(totalRcv),
+      color: G,
+      bg:    "#E8F5E9",
+      ic:    G,
+      path:  <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" strokeLinecap="round" strokeLinejoin="round"/></>
+    },
+    {
+      label: "Total Pending",
+      value: fmt(totalPend),
+      color: O,
+      bg:    "#FFF4EC",
+      ic:    O,
+      path:  <><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3" strokeLinecap="round" strokeLinejoin="round"/></>
+    },
+    {
+      label: "Total Profit",
+      value: fmt(totalProfit),
+      color: P,
+      bg:    "#EEF0FF",
+      ic:    P,
+      path:  <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>
+    },
+  ].map((s) => (
+    <div key={s.label} style={{ background: "#fff", borderRadius: 14, padding: "14px 14px 12px", boxShadow: "0 1px 6px #0000000d" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <span style={{ fontSize: 11, color: "#999", fontWeight: 500 }}>{s.label}</span>
+        <div style={{ width: 30, height: 30, borderRadius: 8, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={s.ic} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {s.path}
+          </svg>
+        </div>
       </div>
+      <div style={{ fontSize: 17, fontWeight: 800, color: s.color, letterSpacing: -0.3 }}>
+        {s.value}
+      </div>
+    </div>
+  ))}
+</div>
 
       {/* ── Overview Donut ── */}
       <Card>
